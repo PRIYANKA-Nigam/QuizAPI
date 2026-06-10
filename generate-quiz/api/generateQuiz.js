@@ -1,5 +1,7 @@
 export default async function handler(req, res) {
-
+console.log(
+"VERSION-2026-CORS-TEST"
+);
   res.setHeader(
     "Access-Control-Allow-Origin",
     "*"
