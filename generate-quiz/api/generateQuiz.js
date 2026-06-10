@@ -1,187 +1,190 @@
 export default async function handler(req, res) {
-res.setHeader(
+
+  res.setHeader(
     "Access-Control-Allow-Origin",
     "*"
-  );                 /*added these setHeader bcoz browser CORS was unable to fetch request from vercel API .TO allow access from vercel 
-  
-  these headers r added*/
+  );
 
   res.setHeader(
     "Access-Control-Allow-Methods",
-    "POST, OPTIONS"
+    "GET,POST,OPTIONS"
   );
 
   res.setHeader(
     "Access-Control-Allow-Headers",
-    "Content-Type"
+    "*"
   );
-if(req.method === "OPTIONS"){
+
+  if(req.method === "OPTIONS"){
     return res.status(200).end();
   }
 
-  if(req.method !== "POST"){
-    return res.status(405).json({
-      error:"Method not allowed"
-    });
-  }
-  try {
+  res.status(200).json({
+    success:true,
+    message:"CORS working"
+  });
 
-    const article = req.body.article;
 
-    if (!article) {
-      return res.status(400).json({
-        error: "Article text missing"
-      });
-    }
-const words = article.split(" ").length;
+//   try {
 
-// let questionCount = 10;
+//     const article = req.body.article;
 
-// if(words > 1000) questionCount = 20;
-// if(words > 2500) questionCount = 30;
-// if(words > 5000) questionCount = 50;
-    const prompt = `
-Create a professional technical quiz from the article below.Questions should resemble certification,
-placement and technical interview questions.
-Generate as many meaningful questions as possible.
+//     if (!article) {
+//       return res.status(400).json({
+//         error: "Article text missing"
+//       });
+//     }
+// const words = article.split(" ").length;
 
-Maximum 50 questions.
+// // let questionCount = 10;
 
-Stop when no additional high-quality questions can be created.
+// // if(words > 1000) questionCount = 20;
+// // if(words > 2500) questionCount = 30;
+// // if(words > 5000) questionCount = 50;
+//     const prompt = `
+// Create a professional technical quiz from the article below.Questions should resemble certification,
+// placement and technical interview questions.
+// Generate as many meaningful questions as possible.
 
-Do not create repetitive questions.
+// Maximum 50 questions.
 
-not simple memorization.
+// Stop when no additional high-quality questions can be created.
 
-Avoid duplicate or trivial questions.
+// Do not create repetitive questions.
 
-Question Distribution:
+// not simple memorization.
 
-- 70% Standard MCQ
-- 20% Scenario-Based MCQ
-- 10% Assertion/Reason MCQ
+// Avoid duplicate or trivial questions.
 
-Rules:
+// Question Distribution:
 
-1. Questions must test understanding, not word memorization.
-2. Avoid trivial keyword-based questions.
-3. Use concepts explained in the article.
-4. Include plausible distractors.
-5. Only one correct answer.
-6. Difficulty distribution:
-   - Easy 30%
-   - Medium 50%
-   - Hard 20%
-7. Return ONLY valid JSON.
-8. Do not include explanations.
+// - 70% Standard MCQ
+// - 20% Scenario-Based MCQ
+// - 10% Assertion/Reason MCQ
 
-JSON format:
+// Rules:
 
-{
-  "questions":[
-    {
-      "type":"mcq",
-      "question":"Question text",
-      "options":[
-        "Option A",
-        "Option B",
-        "Option C",
-        "Option D"
-      ],
-      "answer":"Correct Option"
-    }
-  ]
-}
+// 1. Questions must test understanding, not word memorization.
+// 2. Avoid trivial keyword-based questions.
+// 3. Use concepts explained in the article.
+// 4. Include plausible distractors.
+// 5. Only one correct answer.
+// 6. Difficulty distribution:
+//    - Easy 30%
+//    - Medium 50%
+//    - Hard 20%
+// 7. Return ONLY valid JSON.
+// 8. Do not include explanations.
 
-Article:
+// JSON format:
 
-${article}
-`;
+// {
+//   "questions":[
+//     {
+//       "type":"mcq",
+//       "question":"Question text",
+//       "options":[
+//         "Option A",
+//         "Option B",
+//         "Option C",
+//         "Option D"
+//       ],
+//       "answer":"Correct Option"
+//     }
+//   ]
+// }
 
-    const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" +
-      process.env.GEMINI_API_KEY,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: prompt
-                }
-              ]
-            }
-          ]
-        })
-      }
-    );
+// Article:
 
-    const data = await response.json();
+// ${article}
+// `;
 
-    console.log(
-JSON.stringify(data,null,2)
-);
+//     const response = await fetch(
+//       "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" +
+//       process.env.GEMINI_API_KEY,
+//       {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json"
+//         },
+//         body: JSON.stringify({
+//           contents: [
+//             {
+//               parts: [
+//                 {
+//                   text: prompt
+//                 }
+//               ]
+//             }
+//           ]
+//         })
+//       }
+//     );
 
-if(!data.candidates){  /* directly giving const raw after const data could fail the code ,app may crash.so checking in if block for 
-  any server error case */
+//     const data = await response.json();
 
-return res.status(500).json({
-error:
-"Gemini returned no candidates",
-gemini:data
-});
+//     console.log(
+// JSON.stringify(data,null,2)
+// );
 
-}
-    const raw =
-      data.candidates[0]
-      .content.parts[0]
-      .text;
+// if(!data.candidates){  /* directly giving const raw after const data could fail the code ,app may crash.so checking in if block for 
+//   any server error case */
 
-    const clean =
-      raw
-      .replace(/```json/g, "")
-      .replace(/```/g, "")
-      .trim();
+// return res.status(500).json({
+// error:
+// "Gemini returned no candidates",
+// gemini:data
+// });
 
-  let quiz;
+// }
+//     const raw =
+//       data.candidates[0]
+//       .content.parts[0]
+//       .text;
 
-try{
-             /* added this directly - const quiz =
-JSON.parse(clean); could fail json parsing. so , enclosed it in a try-catch to deal with error case scenarion */
-quiz =
-JSON.parse(clean);
+//     const clean =
+//       raw
+//       .replace(/```json/g, "")
+//       .replace(/```/g, "")
+//       .trim();
 
-}catch(parseError){
+//   let quiz;
 
-return res.status(500).json({
-error:"JSON Parse Failed",
-raw:clean
-});
+// try{
+//              /* added this directly - const quiz =
+// JSON.parse(clean); could fail json parsing. so , enclosed it in a try-catch to deal with error case scenarion */
+// quiz =
+// JSON.parse(clean);
 
-}
+// }catch(parseError){
 
-    return res.status(200).json(quiz);
+// return res.status(500).json({
+// error:"JSON Parse Failed",
+// raw:clean
+// });
 
-  } catch (err) {
+// }
 
-    console.error(err);
+//     return res.status(200).json(quiz);
 
-    return res.status(500).json({
-      error: err.message
-    });
+//   } catch (err) {
 
-  }
-console.log("Question Count:",
-questionCount);
+//     console.error(err);
 
-console.log("Article Length:",
-article.length);
-console.log(
-"Gemini Raw:",
-raw
-);
+//     return res.status(500).json({
+//       error: err.message
+//     });
+
+//   }
+// console.log("Question Count:",
+// questionCount);
+
+// console.log("Article Length:",
+// article.length);
+// console.log(
+// "Gemini Raw:",
+// raw
+// );
+
+
 }
