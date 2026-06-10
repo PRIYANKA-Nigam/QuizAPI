@@ -1,4 +1,7 @@
 export default async function handler(req, res) {
+  console.log(
+"HEADERS TEST"
+);
 console.log(
 "VERSION-2026-CORS-TEST"
 );
@@ -25,7 +28,12 @@ console.log(
     success:true,
     message:"CORS working"
   });
-
+  return res.status(200).json({
+  success:true,
+  cors:
+  req.headers.origin
+});
+}
 
 //   try {
 
@@ -189,4 +197,4 @@ console.log(
 // );
 
 
-}
+// }
