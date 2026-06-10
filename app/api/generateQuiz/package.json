@@ -1,0 +1,8 @@
+{
+  "name": "generate-quiz-api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Quiz generation API route for the generateQuiz project",
+  "main": "route.ts",
+  "type": "module"
+}
