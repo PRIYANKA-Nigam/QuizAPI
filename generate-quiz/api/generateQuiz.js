@@ -1,5 +1,29 @@
 export default async function handler(req, res) {
+res.setHeader(
+    "Access-Control-Allow-Origin",
+    "*"
+  );                 /*added these setHeader bcoz browser CORS was unable to fetch request from vercel API .TO allow access from vercel 
+  
+  these headers r added*/
 
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "POST, OPTIONS"
+  );
+
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type"
+  );
+if(req.method === "OPTIONS"){
+    return res.status(200).end();
+  }
+
+  if(req.method !== "POST"){
+    return res.status(405).json({
+      error:"Method not allowed"
+    });
+  }
   try {
 
     const article = req.body.article;
@@ -11,11 +35,11 @@ export default async function handler(req, res) {
     }
 const words = article.split(" ").length;
 
-let questionCount = 10;
+// let questionCount = 10;
 
-if(words > 1000) questionCount = 20;
-if(words > 2500) questionCount = 30;
-if(words > 5000) questionCount = 50;
+// if(words > 1000) questionCount = 20;
+// if(words > 2500) questionCount = 30;
+// if(words > 5000) questionCount = 50;
     const prompt = `
 Create a professional technical quiz from the article below.Questions should resemble certification,
 placement and technical interview questions.
@@ -98,6 +122,20 @@ ${article}
 
     const data = await response.json();
 
+    console.log(
+JSON.stringify(data,null,2)
+);
+
+if(!data.candidates){  /* directly giving const raw after const data could fail the code ,app may crash.so checking in if block for 
+  any server error case */
+
+return res.status(500).json({
+error:
+"Gemini returned no candidates",
+gemini:data
+});
+
+}
     const raw =
       data.candidates[0]
       .content.parts[0]
@@ -109,8 +147,22 @@ ${article}
       .replace(/```/g, "")
       .trim();
 
-    const quiz =
-      JSON.parse(clean);
+  let quiz;
+
+try{
+             /* added this directly - const quiz =
+JSON.parse(clean); could fail json parsing. so , enclosed it in a try-catch to deal with error case scenarion */
+quiz =
+JSON.parse(clean);
+
+}catch(parseError){
+
+return res.status(500).json({
+error:"JSON Parse Failed",
+raw:clean
+});
+
+}
 
     return res.status(200).json(quiz);
 
@@ -123,5 +175,13 @@ ${article}
     });
 
   }
+console.log("Question Count:",
+questionCount);
 
+console.log("Article Length:",
+article.length);
+console.log(
+"Gemini Raw:",
+raw
+);
 }
