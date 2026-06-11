@@ -33,8 +33,31 @@ if(!body.article){
   const article = body.article; 
   const prompt = `
 Create a quiz from the article below.
+Generate as many meaningful questions as possible.
+Maximum 50 questions.
+Stop when no additional high-quality questions can be created.
 
-Return ONLY valid JSON.
+Do not create repetitive questions.
+Avoid duplicate or trivial questions.
+
+Question Distribution:
+
+- 70% Standard MCQ
+- 20% Scenario-Based MCQ
+- 10% Assertion/Reason MCQ
+Rules:
+
+1. Questions must test understanding, not word memorization.
+2. Avoid trivial keyword-based questions.
+3. Use concepts explained in the article.
+4. Include plausible distractors.
+5. Only one correct answer.
+6. Difficulty distribution:
+   - Easy 30%
+   - Medium 50%
+   - Hard 20%
+7. Return ONLY valid JSON.
+8. Do not include explanations.
 
 Format:
 
