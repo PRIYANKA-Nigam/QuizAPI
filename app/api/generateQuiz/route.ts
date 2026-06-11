@@ -33,31 +33,15 @@ if(!body.article){
   const article = body.article; 
   const prompt = `
 Create a quiz from the article below.
-Generate as many meaningful questions as possible.
-Maximum 50 questions.
-Stop when no additional high-quality questions can be created.
 
-Do not create repetitive questions.
-Avoid duplicate or trivial questions.
+Generate EXACTLY 10 questions.
 
 Question Distribution:
+- 7 Standard MCQ
+- 2 Scenario-Based MCQ
+- 1 Assertion/Reason MCQ
 
-- 70% Standard MCQ
-- 20% Scenario-Based MCQ
-- 10% Assertion/Reason MCQ
-Rules:
-
-1. Questions must test understanding, not word memorization.
-2. Avoid trivial keyword-based questions.
-3. Use concepts explained in the article.
-4. Include plausible distractors.
-5. Only one correct answer.
-6. Difficulty distribution:
-   - Easy 30%
-   - Medium 50%
-   - Hard 20%
-7. Return ONLY valid JSON.
-8. Do not include explanations.
+Return ONLY valid JSON.
 
 Format:
 
@@ -107,11 +91,47 @@ ${article}
 
  const data = await response.json();
 
+console.log(
+JSON.stringify(data,null,2)
+);
+
+if(data.error){
+  return NextResponse.json(
+    data,
+    {
+      status:500,
+      headers:{
+        "Access-Control-Allow-Origin":"*"
+      }
+    }
+  );
+}
+
+if(
+!data.candidates ||
+!data.candidates[0]
+){
+  return NextResponse.json(
+    {
+      questions:[]
+    },
+    {
+      headers:{
+        "Access-Control-Allow-Origin":"*"
+      }
+    }
+  );
+}
+
 const raw =
 data.candidates[0]
 .content.parts[0]
 .text;
+console.log(
+"RAW GEMINI RESPONSE:"
+);
 
+console.log(raw);
 const clean =
 raw
 .replace(/```json/g,"")
