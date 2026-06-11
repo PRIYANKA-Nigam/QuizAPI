@@ -33,20 +33,25 @@ if(!body.article){
   const article = body.article; 
   const existingQuestions =
 body.existingQuestions || [];
-  const prompt = `
+const prompt = `
+
 Create a quiz from the article below.
 
-Generate new questions.
+Generate up to 10 NEW questions.
 
-Create maximum 10 additional high quality questions.
+Existing Questions:
+${JSON.stringify(existingQuestions)}
 
-Important rules:
+Rules:
 
-- Existing questions are already stored.
-- Do NOT repeat existing questions.
-- Do NOT create similar questions with changed wording.
-- Test different concepts.
-- If no new useful questions can be created, return empty array.
+- Never repeat existing questions.
+- Compare by question meaning, not exact text.
+- If a similar question already exists, skip it.
+- Generate only fresh questions.
+- If no new meaningful questions are possible, return:
+{
+ "questions":[]
+}
 
 Question Distribution:
 
@@ -54,7 +59,8 @@ Question Distribution:
 - 20% Scenario-Based MCQ
 - 10% Assertion/Reason MCQ
 
-Return only JSON.
+
+Return ONLY valid JSON.
 
 Format:
 
@@ -70,14 +76,10 @@ Format:
 }
 
 
-Existing Questions:
-
-${JSON.stringify(existingQuestions)}
-
-
 Article:
 
 ${article}
+
 `;
   console.log(process.env.GEMINI_API_KEY);
 
