@@ -31,35 +31,49 @@ if(!body.article){
   );
 }
   const article = body.article; 
+  const existingQuestions =
+body.existingQuestions || [];
   const prompt = `
 Create a quiz from the article below.
 
-Generate EXACTLY 10 questions.
+Generate new questions.
+
+Create maximum 10 additional high quality questions.
+
+Important rules:
+
+- Existing questions are already stored.
+- Do NOT repeat existing questions.
+- Do NOT create similar questions with changed wording.
+- Test different concepts.
+- If no new useful questions can be created, return empty array.
 
 Question Distribution:
-- 7 Standard MCQ
-- 2 Scenario-Based MCQ
-- 1 Assertion/Reason MCQ
 
-Return ONLY valid JSON.
+- 70% Standard MCQ
+- 20% Scenario-Based MCQ
+- 10% Assertion/Reason MCQ
+
+Return only JSON.
 
 Format:
 
 {
-  "questions":[
-    {
-      "type":"mcq",
-      "question":"Question text",
-      "options":[
-        "Option A",
-        "Option B",
-        "Option C",
-        "Option D"
-      ],
-      "answer":"Correct Option"
-    }
-  ]
+ "questions":[
+  {
+   "type":"mcq",
+   "question":"",
+   "options":["","","",""],
+   "answer":""
+  }
+ ]
 }
+
+
+Existing Questions:
+
+${JSON.stringify(existingQuestions)}
+
 
 Article:
 
