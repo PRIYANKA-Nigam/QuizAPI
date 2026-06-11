@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-
+console.log("ROUTE TS EXECUTED");
 export async function OPTIONS() {
   return NextResponse.json(
     {source: "route-ts"},
@@ -17,6 +17,19 @@ export async function POST(request: Request) {
 
   const body = await request.json();
 
+if(!body.article){
+  return NextResponse.json(
+    {
+      error:"article missing"
+    },
+    {
+      status:400,
+      headers:{
+        "Access-Control-Allow-Origin":"*"
+      }
+    }
+  );
+}
   const article = body.article; 
   const prompt = `
 Create a quiz from the article below.
