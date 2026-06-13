@@ -32,7 +32,14 @@ if(!body.article){
 }
   const article = body.article; 
   const existingQuestions =
-body.existingQuestions || [];
+body.existingQuestions || []; 
+
+const existingQuestionText =
+Array.isArray(existingQuestions)
+? existingQuestions
+    .map(q => q.question)
+    .join("\n")
+: "";
 const prompt = `
 
 Create a quiz from the article below.
@@ -40,7 +47,7 @@ Create a quiz from the article below.
 Generate up to 10 NEW questions.
 
 Existing Questions:
-${JSON.stringify(existingQuestions)}
+${existingQuestionText}
 
 Rules:
 
