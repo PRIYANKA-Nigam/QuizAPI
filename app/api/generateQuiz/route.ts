@@ -34,12 +34,41 @@ if(!body.article){
   const existingQuestions =
 body.existingQuestions || []; 
 
-const existingQuestionText =
+console.log(
+"existingQuestions type:",
+typeof existingQuestions
+);
+
+console.log(
+"isArray:",
 Array.isArray(existingQuestions)
-? existingQuestions
-    .map(q => q.question)
-    .join("\n")
-: "";
+);
+
+console.log(
+existingQuestions
+);
+let existingQuestionText = "";
+
+if(
+Array.isArray(existingQuestions)
+){
+
+existingQuestionText =
+existingQuestions
+.slice(-10)
+.map(q => q.question || "")
+.join("\n");
+
+}
+console.log(
+"Existing Questions Count:",
+existingQuestions.length
+);
+
+console.log(
+"Article Length:",
+article.length
+);
 const prompt = `
 
 Create a quiz from the article below.
